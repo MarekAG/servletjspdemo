@@ -9,9 +9,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.example.servletdom.domain.Dom;
-import com.example.servletdomservice.DomService;
+import com.example.servletdom.service.DomService;
 
 @WebServlet(urlPatterns = "/dom")
 public class DomServlet extends HttpServlet {
@@ -22,16 +23,18 @@ public class DomServlet extends HttpServlet {
 	private final String backButton = "<div id='backBtn'><form action='dom'>"
 			+ "<input type='submit' value='Powrót'>" + "</form></div>";
 	DomService service = new DomService();
-
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		response.setCharacterEncoding("utf-8");
-
+		
+		HttpSession session = request.getSession();
+		String loggedUser = session.getAttribute("test") != null ? "<p>"+session.getAttribute("test")+"</p>" : "";
+		
 		if ("add".equals(request.getParameter("action"))) {
 			PrintWriter pw = response.getWriter();
-			pw.println(start);
+			pw.println(start+loggedUser);
 			pw.print("<h2>Podaj parametry nowego domu: </h2>"
 					+ "<div id='form'><form action='dom' method='POST'>"
 					+ "<label>Metraż (m<sup>2</sup>):</label> <select name='size'>");
@@ -64,7 +67,7 @@ public class DomServlet extends HttpServlet {
 				response.sendRedirect("http://localhost:8080/servletdom/dom");
 			} else {
 				PrintWriter pw = response.getWriter();
-				pw.println(start);
+				pw.println(start+loggedUser);
 				pw.println("<ul>");
 				List<Dom> houses = service.showAll();
 				for (int i = 0; i < service.showAll().size(); i++) {
@@ -81,7 +84,7 @@ public class DomServlet extends HttpServlet {
 			}
 		} else {
 			PrintWriter pw = response.getWriter();
-			pw.println(start);
+			pw.println(start+loggedUser);
 			pw.println("<h2>Wybierz co chcesz zrobić: </h2>"
 					+ "<ul><li><a href='dom?action=add'>Dodaj nowy dom</a></li><br/>"
 					+ "<li><a href='dom?action=showAll'>Wyświetl wszystkie domy</a></li><br/>"

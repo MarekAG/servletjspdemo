@@ -1,4 +1,4 @@
-package com.example.servletdomservice;
+package com.example.servletdom.service;
 
 import java.util.ArrayList;
 import java.util.List;
