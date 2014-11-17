@@ -11,7 +11,7 @@ public class DomService {
 
 	public void add(Dom dom) {
 		houses.add(new Dom(dom.getSize(), dom.getAddress(), dom.getNrOfDoors(),
-				dom.getNrOfFloors(), dom.getColor(), dom.getYoc(), dom
+				dom.getNrOfFloors(), dom.getColor(), dom.getAuthor(), dom.getYoc(), dom
 						.getImageUrl()));
 	}
 

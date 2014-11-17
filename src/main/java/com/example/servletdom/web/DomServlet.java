@@ -1,4 +1,4 @@
-package com.example.servletjdom.web;
+package com.example.servletdom.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,18 +23,41 @@ public class DomServlet extends HttpServlet {
 	private final String backButton = "<div id='backBtn'><form action='dom'>"
 			+ "<input type='submit' value='Powrót'>" + "</form></div>";
 	DomService service = new DomService();
+	HttpSession session;
+
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		response.setCharacterEncoding("utf-8");
-		
-		HttpSession session = request.getSession();
-		String loggedUser = session.getAttribute("test") != null ? "<p>"+session.getAttribute("test")+"</p>" : "";
-		
+
+		session = request.getSession();
+		String loggedUser = session.getAttribute("logged") != null ? session
+				.getAttribute("logged").toString().trim() : "";
+		PrintWriter pw = response.getWriter();
+		pw.println(start);
+		if (session.getAttribute("logged") == null) {
+			pw.println("<h1>Brak uprawnień</h1>");
+			pw.println("Musisz się zalogować, aby przejść do tej strony." + "");
+
+			pw.println("<script>"
+					+ "setTimeout(function(){location.href='loggin.jsp';},3000)"
+					+ "</script>");
+			pw.print(stop);
+			pw.close();
+			return;
+		} else {
+			pw.println("<div id ='logout'><div id ='loggedUser'>Zalogowany użytkownik: <a href='profile.jsp'>"
+					+ loggedUser + "</a></div>");
+			pw.println("<form action='dom' method='POST'>"
+					+ "<input type='hidden' name='logout' value='true'>"
+					+ "<input type='submit' value=' Wyloguj' />"
+					+ "</form></div>");
+
+		}
+
 		if ("add".equals(request.getParameter("action"))) {
-			PrintWriter pw = response.getWriter();
-			pw.println(start+loggedUser);
+
 			pw.print("<h2>Podaj parametry nowego domu: </h2>"
 					+ "<div id='form'><form action='dom' method='POST'>"
 					+ "<label>Metraż (m<sup>2</sup>):</label> <select name='size'>");
@@ -56,18 +79,13 @@ public class DomServlet extends HttpServlet {
 					+ "<input type='submit' value=' Zapisz ' />"
 					+ "</form></div>");
 			pw.println(backButton);
-			pw.println(stop);
-			pw.close();
 		} else if ("showAll".equals(request.getParameter("action"))) {
 			if (service.showAll().size() == 0) {
-				PrintWriter pw = response.getWriter();
 				pw.println("<script>" + "alert('Brak domów do wyświetlenia'); "
 						+ "window.location.replace('dom');" + "</script>");
 				pw.close();
 				response.sendRedirect("http://localhost:8080/servletdom/dom");
 			} else {
-				PrintWriter pw = response.getWriter();
-				pw.println(start+loggedUser);
 				pw.println("<ul>");
 				List<Dom> houses = service.showAll();
 				for (int i = 0; i < service.showAll().size(); i++) {
@@ -79,19 +97,15 @@ public class DomServlet extends HttpServlet {
 				}
 				pw.println("</ul>");
 				pw.println(backButton);
-				pw.println(stop);
-				pw.close();
 			}
 		} else {
-			PrintWriter pw = response.getWriter();
-			pw.println(start+loggedUser);
 			pw.println("<h2>Wybierz co chcesz zrobić: </h2>"
 					+ "<ul><li><a href='dom?action=add'>Dodaj nowy dom</a></li><br/>"
 					+ "<li><a href='dom?action=showAll'>Wyświetl wszystkie domy</a></li><br/>"
 					+ "<li><a href='dom?action=removeAll'>Usuń wszystkie domy</a></li></ul>");
 
 			if ("removeAll".equals(request.getParameter("action"))) {
-				pw = response.getWriter();
+				// pw = response.getWriter();
 				pw.println("<script>"
 						+ "var deleteAll = confirm('Usunąć wszystkie rekordy?');"
 						+ "if(deleteAll) {"
@@ -107,9 +121,8 @@ public class DomServlet extends HttpServlet {
 						+ "else " + "window.location.replace('dom');"
 						+ "</script>");
 			}
-			pw.println(stop);
-			pw.close();
 		}
+		pw.close();
 	}
 
 	@Override
@@ -121,10 +134,17 @@ public class DomServlet extends HttpServlet {
 		if (request.getParameter("index") != null) {
 			service.remove(Integer.parseInt(request.getParameter("index")));
 			response.sendRedirect("http://localhost:8080/servletdom/dom?action=showAll");
+		} else if ("true".equals(request.getParameter("logout"))) {
+			session.removeAttribute("logged");
+			response.sendRedirect("http://localhost:8080/servletdom/loggin.jsp");
 		} else if ("true".equals(request.getParameter("deleteAll"))) {
 			service.removeAll();
 			response.sendRedirect("http://localhost:8080/servletdom/dom");
 		} else {
+			String loggedUser = session.getAttribute("logged") != null ? session
+					.getAttribute("logged").toString().trim()
+					: "";
+
 			Dom dom = new Dom();
 			dom.setSize(Integer.parseInt(request.getParameter("size")));
 			dom.setAddress(request.getParameter("address"));
@@ -132,12 +152,22 @@ public class DomServlet extends HttpServlet {
 			dom.setNrOfFloors(Integer.parseInt(request
 					.getParameter("nrOfFloors")));
 			dom.setColor(request.getParameter("color"));
+			dom.setAuthor(loggedUser);
 			dom.setYoc(Integer.parseInt(request.getParameter("yoc")));
 			dom.setImageUrl(request.getParameter("imageUrl"));
 			service.add(dom);
 
 			PrintWriter pw = response.getWriter();
 			pw.println(start);
+			pw.println("<div id ='logout'><div id ='loggedUser'>Zalogowany użytkownik: <a href='profile.jsp'>"
+					+ loggedUser + "</a> </div>");
+			pw.println("<form action='dom' method='POST'>"
+					+ "<input type='hidden' name='logout' value='true'>"
+					+ "<input type='submit' value=' Wyloguj' />"
+					+ "</form></div>");
+			pw.println("<form action='dom' method='POST'>"
+					+ "<input type='hidden' name='logout' value='true'>"
+					+ "<input type='submit' value=' Wyloguj' />" + "</form>");
 			pw.println(dom);
 			pw.println(backButton);
 			pw.println(stop);

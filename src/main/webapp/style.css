@@ -125,6 +125,11 @@ label {
 	display: inline-block;
 }
 
+label.login {
+	width: 50px;
+	display: inline-block;
+}
+
 #radioBtns {
 	margin-left: 120px;
 	display: block;
@@ -144,4 +149,15 @@ ul {
 
 #backBtn {
 	margin-top: 150px;
+}
+
+#loggedUser {
+ 	display: inline-block; 
+	margin-right: 20px;
+	float: left;	
+}
+
+#logout {
+	display: inline-block;
+	float: right;
 }

@@ -1,45 +1,58 @@
 <%@page import="java.awt.Stroke"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+	pageEncoding="UTF-8"%>
+	<%@ taglib prefix="c" 
+           uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<link rel='stylesheet' type='text/css' href='style.css'>
+<title>Dom</title>
 </head>
 <body>
-<jsp:useBean id="storage" class="com.example.servletdom.service.UserService" scope="application" />
-<jsp:useBean id="user" class="com.example.servletdom.domain.User" scope="session" />
-<jsp:setProperty property="*" name="user" />
-
-<%
-Boolean isInDB = storage.add(user);
-if (user.getName() != null && user.getPass() != null && isInDB) {
-%>
-<p>Użytkownik o loginie: ${user.name} został dodany do bazy! </p>
-<p>Możesz się teraz zalogować:</p>
-
-<% 
-}
-else if (user.getName() != null && user.getPass() != null && !isInDB)  {
-%>
-<p>Użytkownik o podanym loginie już istnieje</p>
-<%
-}
-%>
+	<div id='site'>
+		<div id='content'>
+			<jsp:useBean id="storage"
+				class="com.example.servletdom.service.UserService"
+				scope="application" />
+			<jsp:useBean id="user" class="com.example.servletdom.domain.User"
+				scope="session" />
+			<jsp:setProperty property="*" name="user" />
+			<h1>Logowanie</h1>			
+			<%
+				Boolean isInDB = storage.add(user);
+				if (user.getName() != null && user.getPass() != null && isInDB) {
+			%>
+			<p>Użytkownik o loginie: ${user.name} został dodany do bazy!</p>
+			<p>Możesz się teraz zalogować:</p>
 
 
-<form action="check.jsp" method="post">
+			<%
+				} else if (!isInDB && request.getParameter("name") != null) {
+			%>
+			
 
-  Login :<input type="text" name="name" value="${user.name}" /><br />
-  Hasło :<input type="password"  name="pass" value="${user.pass}" /><br />
-  <input type="submit" value=" OK ">
-</form>
+			<p>Użytkownik o podanym loginie już istnieje</p>
 
-<p>Nie masz jeszcze konta?</p>
-<p>
-  <a href="register.jsp">Załóż nowe</a>
-</p>
-  
+			<%
+				}
+			%>
+
+
+			<form action="check.jsp" method="post">
+				<p>Ta strona wymaga uwierzytelnienia. Zaloguj się, aby
+					kontynuować:</p>
+				<label class='login'>Login:</label> <input type="text" name="name"
+					value="${user.name}" required /><br /> <label class='login'>Hasło:</label>
+				<input type="password" name="pass" required /><br />
+				<input type="submit" value=" Zaloguj ">
+			</form>
+			<br />
+			<p>
+				Nie masz jeszcze konta? <a href="register.jsp">Załóż nowe</a>
+			</p>
+		</div>
+	</div>
 </body>
 </html>

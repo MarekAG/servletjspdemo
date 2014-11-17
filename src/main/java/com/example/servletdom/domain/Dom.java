@@ -7,6 +7,7 @@ public class Dom {
 	private int nrOfDoors;
 	private int nrOfFloors;
 	private String color;
+	private String author;
 	private int yoc;
 	private String imageUrl;
 
@@ -15,13 +16,14 @@ public class Dom {
 	}
 
 	public Dom(int size, String address, int nrOfDoors, int nrOfFloors,
-			String color, int yoc, String imageUrl) {
+			String color, String author, int yoc, String imageUrl) {
 		super();
 		this.size = size;
 		this.address = address;
 		this.nrOfDoors = nrOfDoors;
 		this.nrOfFloors = nrOfFloors;
 		this.color = color;
+		this.author = author;
 		this.yoc = yoc;
 		this.imageUrl = imageUrl;
 	}
@@ -66,6 +68,14 @@ public class Dom {
 		this.color = color;
 	}
 
+	public String getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
 	public int getYoc() {
 		return yoc;
 	}
@@ -89,7 +99,8 @@ public class Dom {
 				+ this.getSize() + " <br/>Adres: " + this.address
 				+ " <br/>Ilość drzwi: " + this.nrOfDoors
 				+ " <br/>Ilość pięter: " + this.nrOfFloors + " <br/>Kolor: "
-				+ this.color + " <br/>Rok budowy: " + this.yoc;
+				+ this.color + " <br/>Rok budowy: " + this.yoc
+				+ " <br/>Autor: " + this.author;
 
 	}
 

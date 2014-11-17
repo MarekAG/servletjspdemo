@@ -12,12 +12,20 @@ public class UserService {
 		if (isNameInDB(user)) {
 			return false;
 		}
-		db.put(user.getName(), user.getPass());
+		db.putIfAbsent(user.getName(), user.getPass());
 		return true;
 	}
 	
 	public String getPass(String name) {
 		return db.get(name);
+	}
+	
+	public void setPass(User user) {
+		db.replace(user.getName(), user.getPass());
+	}
+	
+	public void setPass(String name, String pass) {
+		db.replace(name, pass);
 	}
 	
 	public Boolean isNameInDB(User user) {
@@ -28,14 +36,16 @@ public class UserService {
 	}
 	
 	public Boolean isUserRegistered(User user) {
-		if (db.containsKey(user.getName()) && (db.get(user.getPass()) != null)) {
+		if (db.containsKey(user.getName())) 
+			if( db.get(user.getName()).equals(user.getPass())) {
 			return true;
 		}
 		return false;				
 	}
 	
-	public Boolean isUserRegistered(String name, String pass) {
-		if (db.containsKey(name) && (db.get(pass) != null)) {
+	public Boolean isUserRegisteredd(String name, String pass) {
+		if (db.containsKey(name)) 
+			if(pass.equals(db.get(name))) {
 			return true;
 		}
 		return false;				
